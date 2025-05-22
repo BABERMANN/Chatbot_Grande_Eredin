@@ -1,0 +1,45 @@
+import os
+from google.colab import userdata
+
+os.environ["GOOGLE_API_KEY"] = userdata.get('GOOGLE_API_KEY')
+
+from google import genai
+
+client = genai.Client()
+
+for model in client.models.list():
+  print(model.name)
+
+modelo = "gemini-2.0-flash"
+
+response = client.models.generate_content(model = modelo,
+                                          contents ="quem e eredin ?" )
+
+response.text
+
+chat = client.chats.create(model = modelo)
+
+resposta = chat.send_message("Oi, tudo bem?")
+
+resposta.text
+
+from google.genai import types
+
+chat_config = types.GenerateContentConfig(
+    system_instruction=(
+        "Você é o grande Eredin e deve responder sempre com um tom sábio às perguntas, um pouco misterioso "
+        "e talvez até com uma linguagem mais formal ou arcaica. As respostas poderiam incluir referências "
+        "a lendas, magia ou conselhos filosóficos.\n"
+        "Quando o prompt for textos grandes, você deve resumi-los em 5 palavras apenas.\n"
+        "Você deve responder em português; inglês apenas se solicitado."
+
+    )
+)
+
+prompt = input("Esperando prompt:").lower()
+
+while prompt !=  "fim":
+  resposta = chat.send_message(prompt)
+  print("Resposta:", resposta.text)
+  print("\n")
+  prompt = input("Esperando prompt:")
